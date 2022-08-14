@@ -458,7 +458,7 @@ class Raphael extends Extension {
             func: (args) => {
                 const c1 = args.COLOR1.trim().startsWith('[') ? JSON.parse(args.COLOR1) : args.COLOR1;
                 const c2 = args.COLOR2.trim().startsWith('[') ? JSON.parse(args.COLOR2) : args.COLOR2;
-                return JSON.stringify([COLOR1, COLOR2, PROPORTION]);
+                return JSON.stringify([c1, c2, Cast.toNumber(args.PROPORTION)]);
             }
         } , {
             opcode: 'createLinearGradient',
