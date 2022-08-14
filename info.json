@@ -1,7 +1,7 @@
 {
     "id": "shiki.raphael",
     "author": "SimonShiki",
-    "version": "0.1",
+    "version": "0.2",
     "icon": "assets/icon.png",
     "inset_icon": "assets/inset_icon.svg",
     "api": 1,

@@ -1,8 +1,11 @@
 import { Extension, type, api } from 'clipcc-extension';
 import CtxManager from './ctx-manager';
+import AssetBucket from './asset-bucket';
 import Cast from './cast';
 import Color from './color';
 import { flatGradient } from './gradient';
+
+const fs = 'https://api.codingclip.com/v1/project/asset/';
 
 class Raphael extends Extension {
     constructor () {
@@ -12,6 +15,7 @@ class Raphael extends Extension {
         this.onUninit = this.onUninit.bind(this);
         const { runtime } = api.getVmInstance();
         this.manager = new CtxManager(runtime);
+        this.assetBucket = new AssetBucket(fs, this.manager);
         this.currentId = 1;
     }
     
@@ -257,7 +261,7 @@ class Raphael extends Extension {
                 const textMetrics = ctx.measureText(args.TEXT);
                 return textMetrics[args.ATTRIBUTE];
             }
-        }, {
+        }, /*{
             opcode: 'hexToDec',
             type: type.BlockType.REPORTER,
             param: {
@@ -267,7 +271,7 @@ class Raphael extends Extension {
                 }
             },
             func: (args) => Color.hexToDecimal(args.HEX)
-        }, {
+        }*/, {
             opcode: 'setColor',
             param: {
                 TYPE: {
@@ -285,8 +289,29 @@ class Raphael extends Extension {
             },
             func: (args) => {
                 const ctx = this.manager.getContext(this.currentId);
-                if (args.TYPE === 'shadow') ctx.shadowColor = Color.decimalToHex(args.COLOR);
-                else ctx[`${args.TYPE}Style`] = Color.decimalToHex(args.COLOR);
+                if (!args.COLOR.trim().startsWith('{')) {
+                    if (args.TYPE === 'shadow') ctx.shadowColor = args.COLOR;
+                    else ctx[`${args.TYPE}Style`] = args.COLOR;
+                } else {
+                    if (args.TYPE === 'shadow') return;
+                    try {
+                        let gradient = null;
+                        const gradientData = JSON.parse(args.COLOR);
+                        if (gradientData.type === 'linear') {
+                            const { x0, y0, x1, y1 } = gradientData;
+                            gradient = ctx.createLinearGradient(x0, y0, x1, y1);
+                        } else if (gradientData.type === 'radial') {
+                            const { x0, y0, r0, x1, y1, r1 } = gradientData;
+                            gradient = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+                        } else return;
+                        for (const stop of gradientData.gradient) {
+                            gradient.addColorStop(stop.proportion, stop.color);
+                        }
+                        console.log(gradient);
+                        ctx[`${args.TYPE}Style`] = gradient;
+                        console.log(ctx[`${args.TYPE}Style`]);
+                    } catch (e) {}
+                }
             }
         }, {
             opcode: 'isImageSmoothingEnabled',
@@ -1012,7 +1037,15 @@ class Raphael extends Extension {
                 }
             },
             func: (args) => {
-                
+                return new Promise(resolve => {
+                    this.manager.load(args.TYPE, args.CONTENT, args.NAME)
+                        .then(() => {
+                            resolve();
+                        }).catch(e => {
+                            console.error('error occurred while loading' + content, e);
+                            resolve();
+                        });
+                });
             }
         }, {
             opcode: 'drawImage',
@@ -1032,6 +1065,8 @@ class Raphael extends Extension {
             },
             func: (args) => {
                 const ctx = this.manager.getContext(this.currentId);
+                if (!this.assetBucket.assets.hasOwnProperty(name)) return;
+                ctx.drawImage(this.assetBucket.assets[args.NAME], Cast.toNumber(args.DX), Cast.toNumber(args.DY));
             }
         }, {
             opcode: 'save',
