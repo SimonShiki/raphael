@@ -271,7 +271,7 @@ class Raphael extends Extension {
                 }
             },
             func: (args) => Color.hexToDecimal(args.HEX)
-        }*/, {
+        },*/ {
             opcode: 'setColor',
             param: {
                 TYPE: {
