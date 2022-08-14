@@ -1,0 +1,11 @@
+{
+    "shiki.raphael.name": "妙笔 β",
+    "shiki.raphael.description": "生花!",
+    "shiki.raphael.category": "妙笔",
+    
+    "shiki.raphael.setArtboardIdTo": "设置画板 ID 为 [ID]",
+    "shiki.raphael.hexToDec": "将十六进制色 [HEX] 转换为内部颜色",
+    "shiki.raphael.path": "创建路径 ⚠ [SUBSTACK]" ,
+    "shiki.raphael.apply": "应用到舞台",
+    "shiki.raphael.gradient": "创建从 [COLOR1] 到 [COLOR2] 比例为 [PROPORTION] 的渐变色"
+}
