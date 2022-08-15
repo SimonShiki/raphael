@@ -53,6 +53,10 @@ class Raphael extends Extension {
                 branchCount: easyBlock.branchCount || 0,
                 messageId: `shiki.raphael.${easyBlock.opcode}`,
                 categoryId: `shiki.raphael.category`,
+                option: {
+                    terminal: easyBlock.terminal,
+                    monitor: easyBlock.monitor
+                },
                 function: easyBlock.func
             });
         }
@@ -74,7 +78,7 @@ class Raphael extends Extension {
         api.addCategory({
             categoryId: 'shiki.raphael.category',
             messageId: 'shiki.raphael.category',
-            color: '#C21F30'
+            color: '#3064A8'
         });
         this.makeBlocks([{
             opcode: 'setArtboardIdTo',
@@ -112,6 +116,7 @@ class Raphael extends Extension {
                         'lineDash'])
                 }
             },
+            monitor: true,
             func: (args) => {
                 const ctx = this.manager.getContext(this.currentId);
                 if (args.ATTRIBUTE === 'lineDash') {

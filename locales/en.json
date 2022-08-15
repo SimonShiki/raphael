@@ -116,5 +116,7 @@
     "shiki.raphael.menu.artboard": "Artboard",
     "shiki.raphael.menu.blob": "Blob",
     "shiki.raphael.menu.nonzero": "nonzero",
-    "shiki.raphael.menu.evenodd": "evenodd"
+    "shiki.raphael.menu.evenodd": "evenodd",
+    
+    "shiki.raphael.settings.autoScale": "High-Quality Artboard(Auto scale)"
 }

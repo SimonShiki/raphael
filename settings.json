@@ -1,0 +1,5 @@
+[{
+    "id": "autoScale",
+    "type": "boolean",
+    "default": false
+}]

@@ -34,6 +34,9 @@ const config = {
             }, {
                 from: path.join(__dirname, 'info.json'),
                 to: path.join(__dirname, 'build/info.json')
+            }, {
+                from: path.join(__dirname, 'settings.json'),
+                to: path.join(__dirname, 'build/settings.json')
             }]
         }),
         new ZipWebpackPlugin({

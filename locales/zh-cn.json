@@ -18,5 +18,7 @@
     
     "shiki.raphael.menu.artboard": "画板",
     "shiki.raphael.menu.nonzero": "非零环绕原则(nonzero)",
-    "shiki.raphael.menu.evenodd": "奇偶环绕原则(evenodd)"
+    "shiki.raphael.menu.evenodd": "奇偶环绕原则(evenodd)",
+    
+    "shiki.raphael.settings.autoScale": "高清画板(自动缩放)"
 }
