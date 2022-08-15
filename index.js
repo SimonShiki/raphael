@@ -10,6 +10,9 @@ const fs = 'https://api.codingclip.com/v1/project/asset/';
 class Raphael extends Extension {
     constructor () {
         super();
+        this.checkVersion = this.checkVersion.bind(this);
+        this.checkVersion();
+        
         this.makeBlocks = this.makeBlocks.bind(this);
         this.onInit = this.onInit.bind(this);
         this.onUninit = this.onUninit.bind(this);
@@ -19,9 +22,30 @@ class Raphael extends Extension {
         this.currentId = 1;
     }
     
+    checkVersion () {
+        const { runtime } = api.getVmInstance();
+        const version = runtime.version.split('.');
+        // 判断社区版
+        if (version[0].startsWith('c')) version[0] = version[0].slice(1);
+        console.log('checking version', version);
+        
+        if (parseInt(version[1]) < 1 || parseInt(version[2]) < 2) {
+            alert('The minimum editor version that this extension can run is 3.1.3, please upgrade your ClipCC.');
+            throw new Error('too low version');
+        }
+        
+        if (parseInt(version[1]) < 2 && parseInt(version[2]) < 4) {
+            this.supportBranch = false;
+            if (!confirm('The current version cannot use branch path blocks, are you sure you want to loading anyway?')) {
+                throw new Error('refused to load');
+            }
+        } else this.supportBranch = true;
+    }
+    
     makeBlocks (easyBlocks) {
         const blocks = [];
         for (const easyBlock of easyBlocks) {
+            if (easyBlock.hasOwnProperty('branchCount') && !this.supportBranch) continue;
             blocks.push({
                 opcode: `shiki.raphael.${easyBlock.opcode}`,
                 type: easyBlock.type || type.BlockType.COMMAND,
