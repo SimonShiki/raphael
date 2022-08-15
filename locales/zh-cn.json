@@ -1,11 +1,22 @@
 {
     "shiki.raphael.name": "妙笔 β",
-    "shiki.raphael.description": "生花!",
+    "shiki.raphael.description": "生花🌸!",
     "shiki.raphael.category": "妙笔",
     
     "shiki.raphael.setArtboardIdTo": "设置画板 ID 为 [ID]",
-    "shiki.raphael.hexToDec": "将十六进制色 [HEX] 转换为内部颜色",
+    "shiki.raphael.setArttibuteTo": "设置 [ATTRIBUTE] 为 [NUMBER]",
+    "shiki.raphael.get": "获取当前画板的 [ATTRIBUTE]",
     "shiki.raphael.path": "创建路径 ⚠ [SUBSTACK]" ,
     "shiki.raphael.apply": "应用到舞台",
-    "shiki.raphael.gradient": "创建从 [COLOR1] 到 [COLOR2] 比例为 [PROPORTION] 的渐变色"
+    "shiki.raphael.gradient": "创建从 [COLOR1] 到 [COLOR2] 比例为 [PROPORTION] 的渐变色",
+    "shiki.raphael.isImageSmoothingEnabled": "平滑画板开启了吗?",
+    "shiki.raphael.isPointInPath": "点(x: [X], y: [Y]) 在路径内吗？([FILLRULE])",
+    "shiki.raphael.isPointInStroke": "点(x: [X], y: [Y]) 在描边上吗?",
+    "shiki.raphael.loadImage": "加载图片 ([TYPE] [CONTENT]) 并命名为 [NAME]",
+    "shiki.raphael.isLoaded": "图片 [NAME] 已经加载了吗?",
+    "shiki.raphael.unloadImage": "卸载图片 [NAME]",
+    
+    "shiki.raphael.menu.artboard": "画板",
+    "shiki.raphael.menu.nonzero": "非零环绕原则(nonzero)",
+    "shiki.raphael.menu.evenodd": "奇偶环绕原则(evenodd)"
 }

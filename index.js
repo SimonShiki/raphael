@@ -289,20 +289,32 @@ class Raphael extends Extension {
             },
             func: (args) => {
                 const ctx = this.manager.getContext(this.currentId);
+                // 是否为特殊色
                 if (!args.COLOR.trim().startsWith('{')) {
                     if (args.TYPE === 'shadow') ctx.shadowColor = args.COLOR;
                     else ctx[`${args.TYPE}Style`] = args.COLOR;
                 } else {
+                    // 以下渐变/图案均不支持对阴影色的修改
                     if (args.TYPE === 'shadow') return;
                     try {
                         let gradient = null;
                         const gradientData = JSON.parse(args.COLOR);
-                        if (gradientData.type === 'linear') {
+                        if (gradientData.type === 'linear') { // 线性渐变
                             const { x0, y0, x1, y1 } = gradientData;
                             gradient = ctx.createLinearGradient(x0, y0, x1, y1);
-                        } else if (gradientData.type === 'radial') {
+                        } else if (gradientData.type === 'radial') { // 放射状渐变
                             const { x0, y0, r0, x1, y1, r1 } = gradientData;
                             gradient = ctx.createRadialGradient(x0, y0, r0, x1, y1, r1);
+                        } else if (gradientData.type === 'pattern') { // 图案
+                            if (args.TYPE !== 'fill') return; // 图案仅支持 fillStyle
+                            
+                            const {name, repetition} = gradientData;
+                            const img = this.assetBucket.assets[name];
+                            if (!img) return;
+                            
+                            gradient = ctx.createPattern(img, repetition);
+                            ctx.fillStyle = gradient;
+                            return;
                         } else return;
                         for (const stop of gradientData.gradient) {
                             gradient.addColorStop(stop.proportion, stop.color);
@@ -338,11 +350,13 @@ class Raphael extends Extension {
             func: (args, util) => {
                 const ctx = this.manager.getContext(this.currentId);
                 if (!util.thread.isBeginPath) {
+                    util.thread.peekStackFrame().warpMode = true;
                     ctx.beginPath();
                     util.thread.isBeginPath = true;
                     util.startBranch(1, true);
                 } else {
                     ctx.closePath();
+                    util.thread.peekStackFrame().warpMode = false;
                     delete util.thread.isBeginPath;
                 }
             }
@@ -588,7 +602,12 @@ class Raphael extends Extension {
                 }
             },
             func: (args) => {
-                // @todo
+                if (!this.assetBucket.assets.hasOwnProperty(args.NAME)) return;
+                return JSON.stringify({
+                    type: 'pattern',
+                    name: args.NAME,
+                    repetition: args.REPETITION
+                });
             }
         } , {
             opcode: 'moveTo',
@@ -1029,23 +1048,45 @@ class Raphael extends Extension {
                 },
                 CONTENT: {
                     type: type.ParameterType.STRING,
-                    default: '// todo'
+                    default: 'ade71c65863ef2b939bf573ab9cb0049.svg'
                 },
                 NAME: {
                     type: type.ParameterType.STRING,
-                    default: 'name',
+                    default: 'pic',
                 }
             },
             func: (args) => {
                 return new Promise(resolve => {
-                    this.manager.load(args.TYPE, args.CONTENT, args.NAME)
+                    this.assetBucket.load(args.TYPE, args.CONTENT, args.NAME)
                         .then(() => {
                             resolve();
                         }).catch(e => {
-                            console.error('error occurred while loading' + content, e);
+                            console.error('error occurred while loading' + args.CONTENT, e);
                             resolve();
                         });
                 });
+            }
+        }, {
+            opcode: 'isLoaded',
+            type: type.BlockType.BOOLEAN,
+            param: {
+                NAME: {
+                    type: type.ParameterType.STRING,
+                    default: 'pic',
+                }
+            },
+            func: (args) => this.assetBucket.assets.hasOwnProperty(args.NAME)
+        }, {
+            opcode: 'unloadImage',
+            param: {
+                NAME: {
+                    type: type.ParameterType.STRING,
+                    default: 'pic',
+                }
+            },
+            func: (args) => {
+                if (!this.assetBucket.assets.hasOwnProperty(args.NAME)) return;
+                this.assetBucket.unload(args.NAME);
             }
         }, {
             opcode: 'drawImage',
@@ -1065,7 +1106,7 @@ class Raphael extends Extension {
             },
             func: (args) => {
                 const ctx = this.manager.getContext(this.currentId);
-                if (!this.assetBucket.assets.hasOwnProperty(name)) return;
+                if (!this.assetBucket.assets.hasOwnProperty(args.NAME)) return;
                 ctx.drawImage(this.assetBucket.assets[args.NAME], Cast.toNumber(args.DX), Cast.toNumber(args.DY));
             }
         }, {

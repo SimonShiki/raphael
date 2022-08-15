@@ -51,6 +51,8 @@
     "shiki.raphael.resetTransform": "resetTransform",
     "shiki.raphael.setGlobalCompositeOperation": "setGlobalCompositeOperation [CO]",
     "shiki.raphael.loadImage": "loadImage ([TYPE] [CONTENT]) as [NAME]",
+    "shiki.raphael.unloadImage": "unloadImage [NAME]",
+    "shiki.raphael.isLoaded": "is [NAME] loaded",
     "shiki.raphael.drawImage": "drawImage [NAME] [DX] [DY]",
     "shiki.raphael.save": "save",
     "shiki.raphael.restore": "restore",
