@@ -16,10 +16,6 @@ class Raphael extends Extension {
         this.makeBlocks = this.makeBlocks.bind(this);
         this.onInit = this.onInit.bind(this);
         this.onUninit = this.onUninit.bind(this);
-        const { runtime } = api.getVmInstance();
-        this.manager = new CtxManager(runtime);
-        this.assetBucket = new AssetBucket(fs, this.manager);
-        this.currentId = 1;
     }
     
     checkVersion () {
@@ -29,7 +25,7 @@ class Raphael extends Extension {
         if (version[0].startsWith('c')) version[0] = version[0].slice(1);
         console.log('checking version', version);
         
-        if (parseInt(version[1]) < 1 || parseInt(version[2]) < 2) {
+        if (parseInt(version[1]) < 1 || (parseInt(version[1]) === 1 && parseInt(version[2]) < 2)) {
             alert('The minimum editor version that this extension can run is 3.1.3, please upgrade your ClipCC.');
             throw new Error('too low version');
         }
@@ -75,6 +71,12 @@ class Raphael extends Extension {
     }
     
     onInit () {
+        const { runtime } = api.getVmInstance();
+        this.manager = new CtxManager(runtime);
+        api.registerGlobalFunction('getCtxManager', () => this.manager);
+        this.assetBucket = new AssetBucket(fs, this.manager);
+        this.currentId = 1;
+        
         api.addCategory({
             categoryId: 'shiki.raphael.category',
             messageId: 'shiki.raphael.category',
@@ -1154,6 +1156,9 @@ class Raphael extends Extension {
     }
     
     onUninit () {
+        api.unregisterGlobalFunction('getCtxManager');
+        delete this.manager;
+        delete this.assetBucket;
         api.removeCategory('shiki.raphael.category');
     }
 }
